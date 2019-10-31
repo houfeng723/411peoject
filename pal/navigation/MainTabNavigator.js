@@ -3,9 +3,14 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreen from '../screens/Home/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import AddEventScreen from '../screens/AddEvent/AddEventScreen';
+import AddStudyScreen from '../screens/AddEvent/AddStudyScreen';
+import AddSportsScreen from '../screens/AddEvent/AddSportsScreen';
+import AddRideScreen from '../screens/AddEvent/AddRideScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -23,11 +28,11 @@ HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
-      focused={focused}
+      focused={focused} 
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+          ? 'ios-home'
+          : 'md-home'
       }
     />
   ),
@@ -51,26 +56,46 @@ LinksStack.navigationOptions = {
 
 LinksStack.path = '';
 
-const SettingsStack = createStackNavigator(
+const AddStack = createStackNavigator(
   {
-    Settings: SettingsScreen,
+    Add: AddEventScreen,
+    Study: AddStudyScreen,
+    Sports: AddSportsScreen,
+    Ride: AddRideScreen,
   },
   config
 );
 
-SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
+AddStack.navigationOptions = {
+  tabBarLabel: 'Add Event',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-add-circle' : 'md-add-circle'} />
   ),
 };
 
-SettingsStack.path = '';
+AddStack.path = '';
+
+const ProfileStack = createStackNavigator(
+  {
+    Profile: ProfileScreen,
+  },
+  config
+);
+
+ProfileStack.navigationOptions = {
+  tabBarLabel: 'Profile',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'iso-contact' : 'md-contact'} />
+  ),
+};
+
+ProfileStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
   LinksStack,
-  SettingsStack,
+  AddStack,
+  ProfileStack,
 });
 
 tabNavigator.path = '';
