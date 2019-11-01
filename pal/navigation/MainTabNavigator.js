@@ -7,6 +7,8 @@ import HomeScreen from '../screens/Home/HomeScreen';
 import TestScreen from '../screens/Home/Test';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import SearchScreen from '../screens/Search/SearchScreen';
+import SearchStudyScreen from '../screens/Search/SearchStudy';
 import AddEventScreen from '../screens/AddEvent/AddEventScreen';
 import AddStudyScreen from '../screens/AddEvent/AddStudyScreen';
 import AddSportsScreen from '../screens/AddEvent/AddSportsScreen';
@@ -44,13 +46,14 @@ HomeStack.path = '';
 
 const LinksStack = createStackNavigator(
   {
-    Links: LinksScreen,
+    Search: SearchScreen,
+    SearchStudy: SearchStudyScreen,
   },
   config
 );
 
 LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+  tabBarLabel: 'Search',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
   ),

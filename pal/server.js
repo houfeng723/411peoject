@@ -43,9 +43,51 @@ app.post('/', (req, res) => {
     console.log(req.body.subject);
     console.log(req.body.courseNumber);
     console.log("true");
-    var instruction = `INSERT INTO StudyEvent VALUES ('${req.body.subject}', 
+    var instruction = `INSERT INTO StudyEvent VALUES (0, '${req.body.subject}', 
     ${req.body.courseNumber},
         '${req.body.time}', '${req.body.location}')`;
+    console.log(instruction);
+    connection.query(instruction, function (err, result) {
+        return res.send({error : err, data : result})
+    });
+  } else if (req.body.type == 'searchStudy') {
+    console.log(req.body.subject);
+    console.log(req.body.courseNumber);
+    console.log(req.body.time);
+    console.log(req.body.location);
+    console.log("true");
+    var clause = "";
+    if (req.body.subject) {
+        clause = clause.concat(`WHERE subject = "${req.body.subject}"`);
+    }
+    if (req.body.courseNumber) {
+        if (clause === "") {
+            clause = clause.concat(`WHERE courseNumber = ${req.body.courseNumber}`);
+        } else {
+            clause = clause.concat(` AND courseNumber = ${req.body.courseNumber}`);
+        }
+        
+    }
+    if (req.body.time) {
+        if (clause === "") {
+            clause = clause.concat(`WHERE time = "${req.body.time}"`);
+        } else {
+            clause = clause.concat(` AND time = "${req.body.time}"`);
+        }
+        
+    }
+    if (req.body.location) {
+        if (clause === "") {
+            clause = clause.concat(`WHERE location = "${req.body.location}"`);
+        } else {
+            clause = clause.concat(` AND location = "${req.body.location}"`);
+        }
+        
+    }
+    
+    var instruction = "SELECT * FROM StudyEvent ";
+    instruction = instruction.concat(clause);
+
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         return res.send({error : err, data : result})
