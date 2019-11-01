@@ -35,10 +35,27 @@ app.post('/', (req, res) => {
   console.log("post");
   if(!req.body) return res.sendStatus(400);
   //var sql = "INSERT INTO Student (name) VALUES ('new name test')";
-  console.log(sql);
-  connection.query(sql, function (err, result) {
-    return res.send({error : err, data : result})
-  });
+  //console.log(sql);
+  if (req.body.type) {
+    console.log(req.body.type);
+  }
+  if (req.body.type == 'addStudy') {
+    console.log(req.body.subject);
+    console.log(req.body.courseNumber);
+    console.log("true");
+    var instruction = `INSERT INTO StudyEvent VALUES ('${req.body.subject}', 
+    ${req.body.courseNumber},
+        '${req.body.time}', '${req.body.location}')`;
+    console.log(instruction);
+    connection.query(instruction, function (err, result) {
+        return res.send({error : err, data : result})
+    });
+  } else {
+    connection.query(sql, function (err, result) {
+        return res.send({error : err, data : result})
+    });
+  }
+  
   //res.status(200).send({data : "I posted this to my server" + req.body.event});
 });
 
