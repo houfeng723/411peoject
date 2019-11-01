@@ -145,16 +145,7 @@ export default class AddStudyScreen extends Component {
               style={styles.TextInputStyleClass}
             />
 
-            <Button 
-              title="Click Here To Display" 
-              color="#2196F3" 
-            />
-            <Text>
-              {this.state.Subject}
-              {this.state.CourseNumber}
-              {this.state.Time}
-              {this.state.Location}
-            </Text>
+
             <Button 
               title="Click Here To Register" 
               onPress={this.postStudyEvent} 
