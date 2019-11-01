@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
    
 });
 
-const SERVER_URL = 'http://127.0.0.1:5005/';
+const SERVER_URL = 'http://10.195.239.188:5005/';
 
 export default class DeleteStudyScreen extends Component {
   // var inputInfo = (
@@ -61,7 +61,7 @@ export default class DeleteStudyScreen extends Component {
  
   }
 
-  postStudyEvent = () => {
+  deleteStudyEvent = () => {
     const { Subject }  = this.state ;
     console.log(Subject)
     const { CourseNumber }  = this.state ;
@@ -147,6 +147,7 @@ export default class DeleteStudyScreen extends Component {
 
             <Button 
               title="Click Here To Delete" 
+              onPress={this.deleteStudyEvent} 
               color="#2196F3" 
             />
             <Text>

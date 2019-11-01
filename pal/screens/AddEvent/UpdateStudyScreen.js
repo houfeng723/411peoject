@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
    
 });
 
-const SERVER_URL = 'http://localhost:5005/';
+const SERVER_URL = 'http://10.195.239.188:5005/';
 
 export default class UpdateStudyScreen extends Component {
   // var inputInfo = (
@@ -53,9 +53,9 @@ export default class UpdateStudyScreen extends Component {
     super(props)  
     this.state = {
       w_Subject: 'cs',
-      w_CourseNumber: 412,
-      w_Time: 'Oct 1',
-      w_Location : 'Sieble',
+      w_CourseNumber: 411,
+      w_Time: 'Oct 31',
+      w_Location : 'Grainger',
       s_Subject: null,
       s_CourseNumber: null,
       s_Time: null,
@@ -65,7 +65,7 @@ export default class UpdateStudyScreen extends Component {
  
   }
 
-  postStudyEvent = () => {
+  updateStudyEvent = () => {
     const { w_Subject }  = this.state ;
     console.log(w_Subject);
     const { w_CourseNumber }  = this.state ;
@@ -81,7 +81,7 @@ export default class UpdateStudyScreen extends Component {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        type : "UpdateStudy",
+        type : "updateStudy",
         wSubject: w_Subject,
         wCourseNumber: w_CourseNumber,
         wTime: w_Time,
@@ -209,6 +209,7 @@ export default class UpdateStudyScreen extends Component {
             />
             <Button 
               title="Click Here To Update" 
+              onPress={this.updateStudyEvent} 
               color="#2196F3" 
             />
             <Text>

@@ -11,8 +11,8 @@ var sql = "INSERT INTO Student (name) VALUES ('new name test')";
 var connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'Fcc987412365',
-  database: 'cs411'
+  password: '',
+  database: 'HF_db'
 });
 
 
@@ -44,8 +44,7 @@ app.post('/', (req, res) => {
     console.log(req.body.courseNumber);
     console.log("true");
     var instruction = `INSERT INTO StudyEvent VALUES (0, '${req.body.subject}', 
-    ${req.body.courseNumber},
-        '${req.body.time}', '${req.body.location}')`;
+    ${req.body.courseNumber}, '${req.body.time}', '${req.body.location}')`;
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         return res.send({error : err, data : result})

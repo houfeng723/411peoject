@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
    
 });
 
-const SERVER_URL = 'http://127.0.0.1:5005/';
+const SERVER_URL = 'http://10.195.239.188:5005/';
 
 export default class SearchStudyScreen extends Component {
   // var inputInfo = (

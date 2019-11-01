@@ -61,7 +61,7 @@ export default class UpdateRideScreen extends Component {
  
   }
 
-  postStudyEvent = () => {
+  updateStudyEvent = () => {
     const { Subject }  = this.state ;
     console.log(Subject)
     const { CourseNumber }  = this.state ;
