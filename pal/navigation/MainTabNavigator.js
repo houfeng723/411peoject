@@ -12,8 +12,14 @@ import SearchStudyScreen from '../screens/Search/SearchStudy';
 import AddEventScreen from '../screens/AddEvent/AddEventScreen';
 import AddStudyScreen from '../screens/AddEvent/AddStudyScreen';
 import AddSportsScreen from '../screens/AddEvent/AddSportsScreen';
+import DeleteStudyScreen from '../screens/AddEvent/DeleteStudyScreen';
+import DeleteSportsScreen from '../screens/AddEvent/DeleteSportsScreen';
+import DeleteRideScreen from '../screens/AddEvent/DeleteRideScreen';
 import AddRideScreen from '../screens/AddEvent/AddRideScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import UpdateStudyScreen from '../screens/AddEvent/UpdateStudyScreen';
+import UpdateSportsScreen from '../screens/AddEvent/UpdateSportsScreen';
+import UpdateRideScreen from '../screens/AddEvent/UpdateRideScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -67,12 +73,18 @@ const AddStack = createStackNavigator(
     Study: AddStudyScreen,
     Sports: AddSportsScreen,
     Ride: AddRideScreen,
+    DeleteStudy: DeleteStudyScreen,
+    DeleteSports: DeleteSportsScreen,
+    DeleteRide: DeleteRideScreen,
+    UpdateStudy: UpdateStudyScreen,
+    UpdateSports: UpdateSportsScreen,
+    UpdateRide: UpdateRideScreen,
   },
   config
 );
 
 AddStack.navigationOptions = {
-  tabBarLabel: 'Add Event',
+  tabBarLabel: 'Event',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-add-circle' : 'md-add-circle'} />
   ),
