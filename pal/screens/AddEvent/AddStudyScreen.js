@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
    
 });
 
-const SERVER_URL = 'http://10.195.239.188:5005/';
+const SERVER_URL = 'http://127.0.0.1:5005/';
 
 export default class AddStudyScreen extends Component {
   // var inputInfo = (
@@ -63,7 +63,7 @@ export default class AddStudyScreen extends Component {
 
   postStudyEvent = () => {
     const { Subject }  = this.state ;
-    console.log(Subject)
+    console.log(Subject);
     const { CourseNumber }  = this.state ;
     const { Time }  = this.state ;
     const { Location }  = this.state ;

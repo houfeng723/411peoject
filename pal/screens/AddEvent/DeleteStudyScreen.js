@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
    
 });
 
-const SERVER_URL = 'http://10.195.239.188:5005/';
+const SERVER_URL = 'http://127.0.0.1:5005/';
 
 export default class DeleteStudyScreen extends Component {
   // var inputInfo = (
@@ -73,7 +73,7 @@ export default class DeleteStudyScreen extends Component {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        type : "DeleteStudy",
+        type : "deleteStudy",
         subject: Subject,
         courseNumber: CourseNumber,
         time: Time,

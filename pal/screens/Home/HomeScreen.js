@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import React, {Component} from "react";
-const SERVER_URL = 'http://10.195.239.188:5005/';
+const SERVER_URL = 'http://localhost:5005/';
 
 
 export default class HomeScreen extends Component {
