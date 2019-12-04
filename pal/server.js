@@ -15,6 +15,7 @@ var connection = mysql.createConnection({
   database: 'HF_db'
 });
 
+var userID = 0;
 
 async function getFromMySql() {
     let retval = null;
@@ -28,36 +29,20 @@ async function getFromMySql() {
     
 }
 
-
-// Upload the latest photo for this session
-app.post('/', (req, res) => {
-  // Very light error handling
-  console.log("post");
-  if(!req.body) return res.sendStatus(400);
-  //var sql = "INSERT INTO Student (name) VALUES ('new name test')";
-  //console.log(sql);
-  if (req.body.type) {
-    console.log(req.body.type);
-  }
-  if (req.body.type == 'addStudy') {
-    console.log(req.body.subject);
-    console.log(req.body.courseNumber);
-    console.log("true");
+app.post('/addStudy', (req ,res)=> {
     var instruction = `INSERT INTO StudyEvent VALUES (0, '${req.body.subject}', 
     ${req.body.courseNumber}, '${req.body.time}', '${req.body.location}')`;
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         return res.send({error : err, data : result})
     });
-  } else if (req.body.type == 'searchStudy') {
-    console.log(req.body.subject);
-    console.log(req.body.courseNumber);
-    console.log(req.body.time);
-    console.log(req.body.location);
-    console.log("true");
+})
+
+
+app.post('/searchStudy', (req ,res)=> {
     var clause = "";
     if (req.body.subject) {
-        clause = clause.concat(`WHERE subject = "${req.body.subject}"`);
+        clause = clause.concat(`WHERE subject = "${req.body.subject[0]}"`);
     }
     if (req.body.courseNumber) {
         if (clause === "") {
@@ -90,14 +75,11 @@ app.post('/', (req, res) => {
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         return res.send({error : err, data : result})
-    });
-  } else if (req.body.type == 'deleteStudy'){
-      console.log(req.body.subject);
-      console.log(req.body.courseNumber);
-      console.log(req.body.time);
-      console.log(req.body.location);
-      console.log("true");
-      var clause = "";
+    })
+})
+
+app.post('/deleteStudy', (req,res) => {
+    var clause = "";
       if (req.body.subject) {
           clause = clause.concat(`WHERE subject = "${req.body.subject}"`);
       }
@@ -133,17 +115,10 @@ app.post('/', (req, res) => {
       connection.query(instruction, function (err, result) {
           return res.send({error : err, data : result})
       });
-  } else if (req.body.type == 'updateStudy'){
-      console.log(req.body.sSubject);
-      console.log(req.body.sCourseNumber);
-      console.log(req.body.sTime);
-      console.log(req.body.sLocation);
-      console.log(req.body.wSubject);
-      console.log(req.body.wCourseNumber);
-      console.log(req.body.wTime);
-      console.log(req.body.wLocation);
-      console.log("true");
-      var setClause = "";
+})
+
+app.post('/updateStudy', (req,res) => {
+    var setClause = "";
       if (req.body.sSubject) {
           setClause = setClause.concat(`subject = "${req.body.sSubject}"`);
       }
@@ -211,21 +186,62 @@ app.post('/', (req, res) => {
       connection.query(instruction, function (err, result) {
           return res.send({error : err, data : result})
       });
-  } else {
-    connection.query(sql, function (err, result) {
-        return res.send({error : err, data : result})
+})
+
+app.post('/signUp', (req, res)=>{
+    var instruction = `SELECT COUNT(*) FROM Authentication WHERE email = '${req.body.email}'`;
+    console.log(instruction);
+    connection.query(instruction, function (err, result) {
+        console.log(result)
+        var exist = result[0]['COUNT(*)'];
+        if (exist == 0) {
+            userID += 1;
+            console.log(userID);
+            instruction = `INSERT INTO Authentication VALUES (${userID}, '${req.body.email}', 
+            '${req.body.password}', '${req.body.name}')`;
+            console.log(instruction);
+            connection.query(instruction, function (err2, result2) {
+                return res.status(200).send({error : err2, data : result2})
+            });
+        } else {
+            console.log("sent 400");
+            return res.status(400).send({error : "The email has been registered before", data : null})
+        }
     });
-  }
-  
-  //res.status(200).send({data : "I posted this to my server" + req.body.event});
-});
+        
+})
+
+app.post('/login', (req, res) => {
+    var instruction = `SELECT COUNT(*) FROM Authentication WHERE email = '${req.body.email}' 
+    AND password = '${req.body.email}'`;
+    console.log(instruction);
+    connection.query(instruction, function (err, result) {
+        console.log(result)
+        var exist = result[0]['COUNT(*)'];
+        if (exist == 0) {
+            return res.status(400).send({
+                message: 'Cannot log in!'
+             });
+        } else {
+            return res.send({error : err, data : null})
+        }
+    });
+})
+
+
+
+app.post('/', (req, res) => {
+  // Very light error handling
+  console.log("post");
+  if(!req.body) return res.sendStatus(400);
+  });
 
 app.get('/', (req, res) => {
-    console.log("fetch");
     connection.query('SELECT name FROM Student', function (err, result) {
         return res.send({error : err, data : result})
     });
 });
+
 
 const port = process.env.PORT || 5005;
 app.listen(port);

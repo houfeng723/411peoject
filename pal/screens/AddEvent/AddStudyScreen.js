@@ -62,18 +62,12 @@ export default class AddStudyScreen extends Component {
   }
 
   postStudyEvent = () => {
-    const { Subject }  = this.state ;
-    console.log(Subject);
-    const { CourseNumber }  = this.state ;
-    const { Time }  = this.state ;
-    const { Location }  = this.state ;
-
-    fetch(SERVER_URL, {
+    const { Subject, CourseNumber, Time, Location}  = this.state ;
+    fetch(SERVER_URL+'addStudy', {
       headers: {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        type : "addStudy",
         subject: Subject,
         courseNumber: CourseNumber,
         time: Time,
@@ -82,10 +76,11 @@ export default class AddStudyScreen extends Component {
       method: 'POST'
     })
     .then(response => response.json())
-    .then(data => 
-      this.setState({info : "NO ERROR"})
+    .then(data => {
+      console.log(data);
+      this.setState({info : "NO ERROR"})}
     ).catch(
-      error => this.setState({ info : error.message }) 
+      error => this.setState({ info : error.message })
     );
 
   }

@@ -20,7 +20,7 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import UpdateStudyScreen from '../screens/AddEvent/UpdateStudyScreen';
 import UpdateSportsScreen from '../screens/AddEvent/UpdateSportsScreen';
 import UpdateRideScreen from '../screens/AddEvent/UpdateRideScreen';
-
+import FilterPage from '../screens/Search/FilterPage';
 const config = Platform.select({
   web: { headerMode: 'screen' },
   default: {},
@@ -54,6 +54,7 @@ const LinksStack = createStackNavigator(
   {
     Search: SearchScreen,
     SearchStudy: SearchStudyScreen,
+    FilterStudy: FilterPage
   },
   config
 );

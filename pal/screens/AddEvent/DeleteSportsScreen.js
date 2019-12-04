@@ -68,12 +68,11 @@ export default class DeleteSportsScreen extends Component {
     const { Time }  = this.state ;
     const { Location }  = this.state ;
 
-    fetch(SERVER_URL, {
+    fetch(SERVER_URL+'DeleteSports', {
       headers: {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        type : "DeleteSports",
         subject: Subject,
         courseNumber: CourseNumber,
         time: Time,

@@ -68,12 +68,11 @@ export default class UpdateRideScreen extends Component {
     const { Time }  = this.state ;
     const { Location }  = this.state ;
 
-    fetch(SERVER_URL, {
+    fetch(SERVER_URL+'UpdateRide',{
       headers: {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        type : "UpdateRide",
         subject: Subject,
         courseNumber: CourseNumber,
         time: Time,

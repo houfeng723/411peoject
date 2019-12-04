@@ -76,12 +76,11 @@ export default class UpdateStudyScreen extends Component {
     const { s_Time }  = this.state ;
     const { s_Location }  = this.state ;
 
-    fetch(SERVER_URL, {
+    fetch(SERVER_URL + 'updateStudy', {
       headers: {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        type : "updateStudy",
         wSubject: w_Subject,
         wCourseNumber: w_CourseNumber,
         wTime: w_Time,
@@ -94,8 +93,9 @@ export default class UpdateStudyScreen extends Component {
       method: 'POST'
     })
     .then(response => response.json())
-    .then(data => 
-      this.setState({info : "NO ERROR"})
+    .then(data => {
+      console.log(data);
+      this.setState({info : "NO ERROR"})}
     ).catch(
       error => this.setState({ info : error.message }) 
     );

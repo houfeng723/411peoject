@@ -11,7 +11,10 @@ import {
   Button,
 } from 'react-native';
 
+
+import { IconButton, Colors } from 'react-native-paper';
 import React, {Component} from "react";
+import { H3 } from 'native-base';
 
 
 export default class SearchScreen extends Component {
@@ -31,24 +34,38 @@ export default class SearchScreen extends Component {
     render() {
 
         return (
-          <View>
+          <View style={{flex:1,alignItems:'center',flexDirection:'column', justifyContent:'space-evenly', width:'50%', alignSelf:'center'}}>
+            <H3 style={{alignSelf:'center'}}> Search Events</H3>
+            <View style={{alignItems:'center'}}>
+            <IconButton
+              icon="library"
+              size={80}
+              onPress={() => this.props.navigation.navigate('SearchStudy')}
+            />
             <Text>
-              i need to search event
+              Study Event
             </Text>
-            
-            <Button
-                title="search study event"
-                onPress={() => this.props.navigation.navigate('SearchStudy')}
+            </View>
+            <View style={{alignItems:'center'}}>
+            <IconButton
+              icon="car-sports"
+              size={80}
+              onPress={() => this.props.navigation.navigate('SearchRide')}
             />
-            <Button
-                title="search sports event"
-                onPress={() => this.props.navigation.navigate('SearchSports')}
+            <Text>
+               Find Rides
+            </Text>
+            </View>
+            <View style={{alignItems:'center'}}>
+            <IconButton
+              icon="football"
+              size={80}
+              onPress={() => this.props.navigation.navigate('SearchSport')}
             />
-            <Button
-                title="search ride"
-                onPress={() => this.props.navigation.navigate('SearchRide')}
-            />
-            
+            <Text>
+              Sports Events
+            </Text>
+            </View>            
           </View>
             
         );

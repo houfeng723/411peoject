@@ -53,9 +53,9 @@ export default class DeleteStudyScreen extends Component {
     super(props)  
     this.state = {
       Subject: 'cs',
-      CourseNumber: 412,
-      Time: 'Oct 1',
-      Location : 'Siebel',
+      CourseNumber: 411,
+      Time: 'Oct 31',
+      Location : 'Grainger',
       returnInfo: null,
     }
  
@@ -63,12 +63,13 @@ export default class DeleteStudyScreen extends Component {
 
   deleteStudyEvent = () => {
     const { Subject }  = this.state ;
-    console.log(Subject)
+    console.log(Subject);
     const { CourseNumber }  = this.state ;
+    console.log(CourseNumber);
     const { Time }  = this.state ;
     const { Location }  = this.state ;
 
-    fetch(SERVER_URL, {
+    fetch(SERVER_URL+'deleteStudy', {
       headers: {
         'content-type': 'application/json'
       },
