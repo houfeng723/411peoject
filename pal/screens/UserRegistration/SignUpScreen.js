@@ -86,43 +86,7 @@ export default class LoginScreen extends Component {
       }
     }
   }
-// {
-//   _takePhoto = async () => {
-//     let pickerResult = await ImagePicker.launchCameraAsync({
-//       allowsEditing: true,
-//       aspect: [4, 3],
-//     });
 
-//     this._handleImagePicked(pickerResult);
-//   };
-
-//   _pickImage = async () => {
-//     let pickerResult = await ImagePicker.launchImageLibraryAsync({
-//       allowsEditing: true,
-//       aspect: [4, 3],
-//     });
-//     if (!pickerResult.cancelled) {
-//       this.setState({ photo: pickerResult.uri });
-//     }
-//     this._handleImagePicked(pickerResult);
-//   };
-
-//   _handleImagePicked = async pickerResult => {
-//     try {
-//       this.setState({ uploading: true });
-
-//       if (!pickerResult.cancelled) {
-//         uploadUrl = await firebaseSDK.uploadImageAsync(pickerResult.uri);
-//         this.setState({ photo: uploadUrl });
-//       }
-//     } catch (e) {
-//       alert('Upload failed, sorry :(');
-//       console.log(e);s
-//     } finally {
-//       this.setState({ uploading: false });
-//     }
-//   };
-// }
   
   render() {
     const {
@@ -351,3 +315,42 @@ const styles = StyleSheet.create({
 LoginScreen.navigationOptions = {
   header: null,
 };
+
+
+// {
+//   _takePhoto = async () => {
+//     let pickerResult = await ImagePicker.launchCameraAsync({
+//       allowsEditing: true,
+//       aspect: [4, 3],
+//     });
+
+//     this._handleImagePicked(pickerResult);
+//   };
+
+//   _pickImage = async () => {
+//     let pickerResult = await ImagePicker.launchImageLibraryAsync({
+//       allowsEditing: true,
+//       aspect: [4, 3],
+//     });
+//     if (!pickerResult.cancelled) {
+//       this.setState({ photo: pickerResult.uri });
+//     }
+//     this._handleImagePicked(pickerResult);
+//   };
+
+//   _handleImagePicked = async pickerResult => {
+//     try {
+//       this.setState({ uploading: true });
+
+//       if (!pickerResult.cancelled) {
+//         uploadUrl = await firebaseSDK.uploadImageAsync(pickerResult.uri);
+//         this.setState({ photo: uploadUrl });
+//       }
+//     } catch (e) {
+//       alert('Upload failed, sorry :(');
+//       console.log(e);s
+//     } finally {
+//       this.setState({ uploading: false });
+//     }
+//   };
+// }

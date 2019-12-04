@@ -63,19 +63,28 @@ export default function FilterPage(props){
     })
     const filterResult = () => {
         let dict = {};
-        let date = new Date(fromDate).toDateString();
-        
+        if(fromDate !== null ) {
+            let date = new Date(fromDate).toDateString();
+                
+            dict["time"] = date;
+        }
         let filtered = feature.filter((each)=>{
             return selectedFeature[each];
         });
-        dict["subject"] = filtered;
-        dict["courseNumber"] = courseNumber;
-        dict["time"] = date;
-        dict["location"] = location;
+        if(filtered !== null) {
+            dict["subject"] = filtered;
+        }
+        if(courseNumber !== null) {
+            
+            dict["courseNumber"] = courseNumber;
+        }
+        if(location !== null) {
+            dict["location"] = location;
+        }
 
         console.log(dict);
         getStudyEvent(dict).then(response => response.json())
-        .then(data => console.log(data));
+        .then(data => {props.setList(data.data);props.closeModal()});
     }
 
     return (

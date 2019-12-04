@@ -16,7 +16,8 @@ var connection = mysql.createConnection({
 });
 
 var userID = 0;
-
+var studyGroupID = 0;
+var currentUser = 0;
 async function getFromMySql() {
     let retval = null;
     connection.query('SELECT name FROM Student', function (err, result) {
@@ -29,12 +30,33 @@ async function getFromMySql() {
     
 }
 
-app.post('/addStudy', (req ,res)=> {
+
+app.post('/ride', (req, res)=>{
+    console.log("32")
     var instruction = `INSERT INTO StudyEvent VALUES (0, '${req.body.subject}', 
     ${req.body.courseNumber}, '${req.body.time}', '${req.body.location}')`;
     console.log(instruction);
     connection.query(instruction, function (err, result) {
-        return res.send({error : err, data : result})
+        if(err) {
+            res.status(400).send(err) 
+        } else {
+            res.status(200).send(result);
+        }
+    });
+})
+
+app.post('/addStudy', (req ,res)=> {
+    studyGroupID += 1;
+    console.log(studyGroupID);
+    var instruction = `INSERT INTO StudyEvent VALUES (${studyGroupID}, '${req.body.subject}', 
+    ${req.body.courseNumber}, '${req.body.time}', '${req.body.location}')`;
+    console.log(instruction);
+    connection.query(instruction, function (err, result) {
+        if(err) {
+            res.status(400).send(err) 
+        } else {
+            res.status(200).send(result);
+        }
     });
 })
 
@@ -42,7 +64,15 @@ app.post('/addStudy', (req ,res)=> {
 app.post('/searchStudy', (req ,res)=> {
     var clause = "";
     if (req.body.subject) {
-        clause = clause.concat(`WHERE subject = "${req.body.subject[0]}"`);
+        var subject = req.body.subject;
+        if (subject.length >= 1) {
+            clause = clause.concat(`WHERE (subject = "${req.body.subject[0]}"`);
+        }
+        for (var i = 1; i < subject.length; i++) {
+            clause = clause.concat(`or subject = "${req.body.subject[i]}"`);
+        }
+        clause = clause.concat(")");
+        
     }
     if (req.body.courseNumber) {
         if (clause === "") {
@@ -212,23 +242,36 @@ app.post('/signUp', (req, res)=>{
 })
 
 app.post('/login', (req, res) => {
-    var instruction = `SELECT COUNT(*) FROM Authentication WHERE email = '${req.body.email}' 
+    var instruction = `SELECT userid FROM Authentication WHERE email = '${req.body.email}' 
     AND password = '${req.body.email}'`;
     console.log(instruction);
     connection.query(instruction, function (err, result) {
-        console.log(result)
-        var exist = result[0]['COUNT(*)'];
-        if (exist == 0) {
+        console.log(result);
+        // var exist = result[0]['COUNT(*)'];
+        if (result.length == 0) {
             return res.status(400).send({
                 message: 'Cannot log in!'
              });
         } else {
-            return res.send({error : err, data : null})
+            currentUser = result[0]['userid'];
+            console.log("userid");
+            console.log(currentUser);
+            return res.send({error : err, data : currentUser})
         }
     });
 })
 
-
+app.post('/joinStudy', (req, res) => {
+    var instruction = `INSERT INTO StudyMember VALUES (${currentUser}, ${req.body.studygroupid})`; 
+    console.log(instruction);
+    connection.query(instruction, function (err, result) {
+        if(err) {
+            res.status(400).send(err) 
+        } else {
+            res.status(200).send(result);
+        }
+    });
+})
 
 app.post('/', (req, res) => {
   // Very light error handling

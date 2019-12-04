@@ -11,6 +11,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import { login } from '../../service/api_service';
 import { Input, Button, Icon, Header} from 'react-native-elements';
 import {  Tab, Text, Tabs, TabHeading } from 'native-base';
 import { Container } from 'native-base';
@@ -44,7 +45,7 @@ export default class LoginScreen extends Component {
       isConfirmationValid: true,
     };
 
-    //this.login = this.login.bind(this);
+    this.logInAccount = this.logInAccount.bind(this);
     //this.signUp = this.signUp.bind(this);
     //this.onPressLogin = this.onPressLogin.bind(this);
   }
@@ -57,16 +58,7 @@ export default class LoginScreen extends Component {
   
   logInAccount = () => {
     const { email, password }  = this.state ;
-    fetch(SERVER_URL+'login', {
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-      method: 'POST'
-    })
+    login(email, password)
     .then(response => {
       if(response.status === 400) {
         alert("Password And ID didn't matach");
@@ -185,8 +177,8 @@ export default class LoginScreen extends Component {
                     buttonStyle={styles.loginButton}
                     containerStyle={{ marginTop: 32, flex: 0 }}
                     activeOpacity={0.8}
-                    title={ 'LOGIN'}
-                    onPress={this.logInAccount }
+                    title={'LOGIN'}
+                    onPress={()=>{this.logInAccount(); console.log("what the hecl");} }
                     titleStyle={styles.loginTextButton}
                     loading={isLoading}
                     disabled={isLoading}
