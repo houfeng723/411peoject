@@ -1,9 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const app = express();
 app.use(bodyParser.json({ limit: '100mb' }));
-
+let api = require('./service/neo4j_server');
 var mysql = require('mysql');
 
 var sql = "INSERT INTO Student (name) VALUES ('new name test')";
@@ -17,7 +16,9 @@ var connection = mysql.createConnection({
 
 var userID = 0;
 var studyGroupID = 0;
+var sportsID = 0;
 var currentUser = 0;
+
 async function getFromMySql() {
     let retval = null;
     connection.query('SELECT name FROM Student', function (err, result) {
@@ -31,10 +32,60 @@ async function getFromMySql() {
 }
 
 
-app.post('/ride', (req, res)=>{
-    console.log("32")
-    var instruction = `INSERT INTO StudyEvent VALUES (0, '${req.body.subject}', 
-    ${req.body.courseNumber}, '${req.body.time}', '${req.body.location}')`;
+app.post('/addRide', async(req, res)=>{
+    console.log(req.body);
+    try {
+        let success = await api.addRideNeo(req.body)
+        if(success) {
+            res.status(200).send("success")
+        }
+    } catch (error) {
+        res.status(400).send(error)
+    }
+        // .then(succes=>res.status(200).send("success"))
+        // .catch(error=>);
+})
+app.post('/user', async(req, res)=>{
+    try {
+        let success = await api.getStudyEvent(req.body)
+        if(success) {
+            res.status(200).send({data : success});
+        }
+    } catch (error) {
+        res.status(400).send(error)
+    }
+        // .then(succes=>res.status(200).send("success"))
+        // .catch(error=>);
+})
+app.post('/user/ride', async(req, res)=>{
+    try {
+        let success = await api.getRideEvents(req.body)
+        if(success) {
+            res.status(200).send({data : success});
+        }
+    } catch (error) {
+        res.status(400).send(error)
+    }
+        // .then(succes=>res.status(200).send("success"))
+        // .catch(error=>);
+})
+
+app.post('/addStudy', async(req ,res)=> {
+    try {
+        let success = await api.addStudy(req.body)
+        if(success) {
+            res.status(200).send("success")
+        }
+    } catch (error) {
+        res.status(400).send(error)
+    }
+
+})
+app.post('/addSport', (req ,res)=> {
+    sportsID += 1;
+    console.log(sportsID);
+    var instruction = `INSERT INTO SportsEvent VALUES (${sportsID},  
+    ${req.body.type}, '${req.body.time}', '${req.body.location}')`;
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         if(err) {
@@ -44,34 +95,18 @@ app.post('/ride', (req, res)=>{
         }
     });
 })
-
-app.post('/addStudy', (req ,res)=> {
-    studyGroupID += 1;
-    console.log(studyGroupID);
-    var instruction = `INSERT INTO StudyEvent VALUES (${studyGroupID}, '${req.body.subject}', 
-    ${req.body.courseNumber}, '${req.body.time}', '${req.body.location}')`;
-    console.log(instruction);
-    connection.query(instruction, function (err, result) {
-        if(err) {
-            res.status(400).send(err) 
-        } else {
-            res.status(200).send(result);
-        }
-    });
-})
-
-
 app.post('/searchStudy', (req ,res)=> {
     var clause = "";
     if (req.body.subject) {
         var subject = req.body.subject;
         if (subject.length >= 1) {
             clause = clause.concat(`WHERE (subject = "${req.body.subject[0]}"`);
+            for (var i = 1; i < subject.length; i++) {
+                clause = clause.concat(`or subject = "${req.body.subject[i]}"`);
+            }
+            clause = clause.concat(")");
         }
-        for (var i = 1; i < subject.length; i++) {
-            clause = clause.concat(`or subject = "${req.body.subject[i]}"`);
-        }
-        clause = clause.concat(")");
+        
         
     }
     if (req.body.courseNumber) {
@@ -107,7 +142,6 @@ app.post('/searchStudy', (req ,res)=> {
         return res.send({error : err, data : result})
     })
 })
-
 app.post('/deleteStudy', (req,res) => {
     var clause = "";
       if (req.body.subject) {
@@ -146,7 +180,6 @@ app.post('/deleteStudy', (req,res) => {
           return res.send({error : err, data : result})
       });
 })
-
 app.post('/updateStudy', (req,res) => {
     var setClause = "";
       if (req.body.sSubject) {
@@ -217,7 +250,6 @@ app.post('/updateStudy', (req,res) => {
           return res.send({error : err, data : result})
       });
 })
-
 app.post('/signUp', (req, res)=>{
     var instruction = `SELECT COUNT(*) FROM Authentication WHERE email = '${req.body.email}'`;
     console.log(instruction);
@@ -231,7 +263,12 @@ app.post('/signUp', (req, res)=>{
             '${req.body.password}', '${req.body.name}')`;
             console.log(instruction);
             connection.query(instruction, function (err2, result2) {
-                return res.status(200).send({error : err2, data : result2})
+                if(err2) {
+                    return res.status(400).send({error: "Insert Failed"});
+                } else {
+                    console.log("going to neo4j");
+                    return api.addPerson({name: req.body.name, email: req.body.email});
+                }
             });
         } else {
             console.log("sent 400");
@@ -240,7 +277,6 @@ app.post('/signUp', (req, res)=>{
     });
         
 })
-
 app.post('/login', (req, res) => {
     var instruction = `SELECT userid FROM Authentication WHERE email = '${req.body.email}' 
     AND password = '${req.body.email}'`;
@@ -256,11 +292,10 @@ app.post('/login', (req, res) => {
             currentUser = result[0]['userid'];
             console.log("userid");
             console.log(currentUser);
-            return res.send({error : err, data : currentUser})
+            return res.status(200).send({error : err, data : currentUser})
         }
     });
 })
-
 app.post('/joinStudy', (req, res) => {
     var instruction = `INSERT INTO StudyMember VALUES (${currentUser}, ${req.body.studygroupid})`; 
     console.log(instruction);
@@ -272,13 +307,11 @@ app.post('/joinStudy', (req, res) => {
         }
     });
 })
-
 app.post('/', (req, res) => {
   // Very light error handling
   console.log("post");
   if(!req.body) return res.sendStatus(400);
-  });
-
+});
 app.get('/', (req, res) => {
     connection.query('SELECT name FROM Student', function (err, result) {
         return res.send({error : err, data : result})
@@ -288,6 +321,5 @@ app.get('/', (req, res) => {
 
 const port = process.env.PORT || 5005;
 app.listen(port);
-
 console.log(`Grill server listening on ${port}`);
 

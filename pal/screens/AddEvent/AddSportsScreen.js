@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import React, {Component} from "react";
-
+import { addSportsEvent } from '../../service/api_service'
 
 export default class AddSportsScreen extends Component {
 
@@ -23,8 +23,6 @@ export default class AddSportsScreen extends Component {
             <Text>
               i need to add sports event
             </Text>
-            
-            
             
           </View>
             

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import * as ImagePicker from 'expo-image-picker';
-
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import { signUpAccount } from '../../service/api_service';
 import {
   StyleSheet,
   Dimensions,
@@ -51,28 +51,28 @@ export default class LoginScreen extends Component {
     return re.test(email);
   }
   
-  signUpAccount = () => {
-    const { name, email, password }  = this.state ;
-    fetch(SERVER_URL + 'signUp', {
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
-      }),
-      method: 'POST'
-    }).then(res=>{
-      if(res.status === 200) {
-        console.log(res.json());
-        console.log(res.status);
-        alert("Sign Up Success!");
-      } else {
-        alert("Address Has Been Used");
-      }
-    })
-  }
+  // signUpAccount = () => {
+  //   const { name, email, password }  = this.state ;
+  //   fetch(SERVER_URL + 'signUp', {
+  //     headers: {
+  //       'content-type': 'application/json'
+  //     },
+  //     body: JSON.stringify({
+  //       name: name,
+  //       email: email,
+  //       password: password,
+  //     }),
+  //     method: 'POST'
+  //   }).then(res=>{
+  //     if(res.status === 200) {
+  //       console.log(res.json());
+  //       console.log(res.status);
+  //       alert("Sign Up Success!");
+  //     } else {
+  //       alert("Address Has Been Used");
+  //     }
+  //   })
+  // }
 
   componentDidMount() {
     this.getPermissionAsync();
@@ -204,7 +204,7 @@ export default class LoginScreen extends Component {
                     containerStyle={{ marginTop: 32, flex: 0 }}
                     activeOpacity={0.8}
                     title={ 'SIGN UP'}
-                    onPress={this.signUpAccount }
+                    onPress={()=>signUpAccount(this.state)}
                     titleStyle={styles.loginTextButton}
                     loading={isLoading}
                     disabled={isLoading}

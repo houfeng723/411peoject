@@ -11,7 +11,7 @@ const MultiSearch = ({navigation}) => {
   const [showModal, setShowModal] = useState(false);
 
   let child = null;
-  if(list !== null) {
+  if(list !== null ) {
     child = list.map((each, index) => {
       console.log(each);
       console.log("list each");

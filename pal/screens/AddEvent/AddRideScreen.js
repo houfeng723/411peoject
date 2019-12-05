@@ -10,6 +10,7 @@ import { TextInput } from 'react-native-paper';
 const request_url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyDaBE821YtcKHCQ1bGXuu8hUK24vlbrjcU&input=";
 const location_url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyDaBE821YtcKHCQ1bGXuu8hUK24vlbrjcU&fields=geometry&place_id=";
 import { addRide } from '../../service/api_service'
+import { AsyncStorage } from 'react-native';
 
 export default function FilterPage(props){
     const [rerender, setRerender] = useState([]);
@@ -21,7 +22,26 @@ export default function FilterPage(props){
     const [search, setSearch ]= useState(null);
     const [predictions, setPredictions] = useState([]);
     const [lines, setLines] = useState([]);
+    const [email, setEmail] = useState(null);
     mapRef = useRef(null);
+
+    _retrieveData = async () => {
+      try {
+        const value = await AsyncStorage.getItem("email");
+        if (value !== null) {
+          console.log(value);
+          setEmail(value);
+        } else {
+          console.log(value);
+        }
+      } catch (error) {
+        console.log(error);
+        // Error retrieving data
+      }
+    };
+    useEffect(()=>{
+      _retrieveData();
+    },[])
     async function autoComplete(destination) {
       setSearch(destination);
       let response = await fetch(request_url + destination);
@@ -44,11 +64,11 @@ export default function FilterPage(props){
       setLines([from, to]);
     }
 
-    async function locateAddress(place_id) {
+    async function locateAddress(place_id, description) {
       let response = await fetch(location_url + place_id);
       response.json().then((resp)=>{
         let dict = {};
-        dict["address"] = search;
+        dict["address"] = description;
         dict["longitude"] = resp.result.geometry.location.lng ;
         dict["latitude"] = resp.result.geometry.location.lat;
         
@@ -68,12 +88,12 @@ export default function FilterPage(props){
     const updateAddress = (info) => {
       console.log(info);
     }
-      const predicts = predictions.map((each, index) => {  
+    const predicts = predictions.map((each, index) => {  
         return (
             <TouchableOpacity key={index} 
             onPress={()=>{
               setShowModal(false);
-              locateAddress(each.place_id);
+              locateAddress(each.place_id, each.description);
            }}>
             <ListItem
                 key={index}
@@ -103,19 +123,28 @@ export default function FilterPage(props){
   
     const submitEvent = () => {
       let dict = {}
-      dict["fromLocation"] = fromLocation;
-      dict["toLocation"] = toLocation;
+      dict["fromLocation"] = fromLocation.address;
+      dict["toLocation"] = toLocation.address;
       dict["date"] = date;
-      let resp = addRide(dict);
-      if(resp.status === 400) {
-        alert("Failed to submit");
-      } else {
-        alert("Success");
-        self.navigation.goBack();
-      }
-
+      dict["email"] = email;
+      addRide(dict).then(resp=> {
+        if(resp.status === 200) {
+          alert("Success");
+          props.navigation.goBack();
+        } else {
+          alert("Failed");
+        }
+      });
+      // resp.json().then((res) => {
+      //   if(res.status === 200) {
+      //     alert("Success");
+      //     props.navigation.goBack();
+      //   } else {
+      //     alert("Failed");
+      //   }
+      // })
     }
-    
+
     return (
         <ScrollView contentContainerStyle={{width: "90%", alignSelf:'center', marginTop:5, justifyContent:'flex-start'}}>
             <Card>

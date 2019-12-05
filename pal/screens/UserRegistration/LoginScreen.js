@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { AsyncStorage } from 'react-native';
 import {
   StyleSheet,
   View,
@@ -46,10 +47,19 @@ export default class LoginScreen extends Component {
     };
 
     this.logInAccount = this.logInAccount.bind(this);
+    this.storeData = this.storeData.bind(this);
     //this.signUp = this.signUp.bind(this);
     //this.onPressLogin = this.onPressLogin.bind(this);
   }
-  
+  storeData = async() => {
+    try {
+      console.log(this.state.email);
+      let result = await AsyncStorage.setItem("email",this.state.email);
+      console.log(result);
+    } catch (e) {
+      alert(e);
+    }
+  }
   validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -64,9 +74,11 @@ export default class LoginScreen extends Component {
         alert("Password And ID didn't matach");
       } else {
         alert("Logged In!");
-        this.props.navigation.navigate("Home");
-      }}
-    ).catch(err=>console.log(err));
+        response.json().then(data=>{
+          this.storeData();
+          this.props.navigation.navigate("Home");
+        });
+      }}).catch(err=>console.log(err));
   }
 
   login() {

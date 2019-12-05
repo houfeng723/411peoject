@@ -6,6 +6,7 @@ import { Divider, Text } from 'react-native-paper';
 import { DatePicker, H3} from 'native-base';
 import { Button, ButtonGroup, Icon } from 'react-native-elements';
 import { TextInput } from 'react-native-paper';
+import { AsyncStorage } from 'react-native';
 
 import { addStudyEvent } from '../../service/api_service'
 const features = ["CS", "MATH", 
@@ -22,6 +23,7 @@ export default function FilterPage(props){
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
     const [location, setLocation] = useState(null);
+    const [email, setEmail] = useState(null);
     
     const onSelect = (each) => {
         var newState = selectedFeature;
@@ -38,7 +40,21 @@ export default function FilterPage(props){
         setRerender(!rerender);
     };
 
+    _retrieveData = async () => {
+        try {
+          const value = await AsyncStorage.getItem("email");
+          if (value !== null) {
+            setEmail(value);
+          } else {
+            console.log(value);
+          }
+        } catch (error) {
+          console.log(error);
+          // Error retrieving data
+        }
+      };
     useEffect(()=> {
+        _retrieveData();
         let dict = {};
         feature.forEach(each=>{
             dict[each] = false;
@@ -96,10 +112,13 @@ export default function FilterPage(props){
             alert("Please select your subject !")
             return;
         }
-        dict["subject"] = filtered;
+
+        dict["subject"] = filtered[0];
+        console.log(dict);
         dict["courseNumber"] = courseNumber;
-        dict["time"] = date;
+        dict["date"] = date;
         dict["location"] = location;
+        dict["email"] = email;
 
         addStudyEvent(dict).then(response => {
             if(response.status === 400) {

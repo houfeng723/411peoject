@@ -12,8 +12,6 @@ const features = ["CS", "MATH",
                   "HIST", "BUSINESS", "ART", 
                   "LITERATURE", "MUSIC", "All"]
 
-
-
 export default function FilterPage(props){
     const [feature, setFeature] = useState(features);
     const [courseNumber, setCourseNumber] = useState(null);
