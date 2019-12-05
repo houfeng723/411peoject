@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const MongoClient = require('mongodb').MongoClient;
 const app = express();
 app.use(bodyParser.json({ limit: '100mb' }));
 
@@ -11,9 +11,11 @@ var sql = "INSERT INTO Student (name) VALUES ('new name test')";
 var connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
-  database: 'HF_db'
+  password: 'Fcc987412365',
+  database: 'cs411'
 });
+
+var mongo_url = 'mongodb://localhost:27017';
 
 var userID = 0;
 var studyGroupID = 0;
@@ -30,15 +32,74 @@ async function getFromMySql() {
     
 }
 
+app.post('/add-student-profile', (req, res) => {
+    console.log("post - add student profile");
+    if(!req.body) return res.sendStatus(400);
+    if(!req.body.netID || !req.body.name) return res.sendStatus(400);
+    //default value
+    var name_input = req.body.name || '';
+    var gender_input = req.body.gender || '';
+    var nickname_input = req.body.nickname || '';
+    var courses_taken_input = req.body.courses_taken || '[]';
+    var interest_input = req.body.interest || '[]';
+    var netID_input = req.body.netID || '';
+    MongoClient.connect(mongo_url, function(err, client) {
+        if (err) {
+            throw err;
+        }
+        var db = client.db('cs411');
+        db.collection('Student').insertOne({
+            name: name_input,
+            gender: gender_input,
+            nickname: nickname_input,
+            courses_taken: courses_taken_input,
+            interest: interest_input,
+            netID: netID_input
+        }).then(result => {
+            console.log("Successfully update " + netID_input + "'s profile." );
+            client.close();
+            res.sendStatus(200);
+        }).catch(err => {
+            console.error("Failed to update profile");
+            client.close();
+            res.sendStatus(500);
+        })
+
+    });
+});
+
+app.get('/get-student-profile/:netID', (req, res) => {
+    console.log("post - get student profile");
+    if(!req.body) return res.sendStatus(400);
+    MongoClient.connect('mongodb://localhost:27017', function(err, client) {
+        if (err) {
+            throw err;
+        }
+        if (!req.params.netID) {
+            console.error("Requested Field missing.");
+            res.sendStatus(400);
+        }
+        const netID_input = req.params.netID;
+
+        var db = client.db('cs411');
+        db.collection('Student').findOne({
+            netID: netID_input
+        }).then(result => {
+            console.log("Successfully get " + netID_input + "'s profile." );
+            return res.send({error : err, data : result});
+        })
+
+    });
+});
 
 app.post('/ride', (req, res)=>{
-    console.log("32")
+    console.log("32");
     var instruction = `INSERT INTO StudyEvent VALUES (0, '${req.body.subject}', 
     ${req.body.courseNumber}, '${req.body.time}', '${req.body.location}')`;
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         if(err) {
-            res.status(400).send(err) 
+            res.status(400).send(err)
         } else {
             res.status(200).send(result);
         }
@@ -53,7 +114,7 @@ app.post('/addStudy', (req ,res)=> {
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         if(err) {
-            res.status(400).send(err) 
+            res.status(400).send(err)
         } else {
             res.status(200).send(result);
         }
@@ -72,7 +133,7 @@ app.post('/searchStudy', (req ,res)=> {
             clause = clause.concat(`or subject = "${req.body.subject[i]}"`);
         }
         clause = clause.concat(")");
-        
+
     }
     if (req.body.courseNumber) {
         if (clause === "") {
@@ -238,7 +299,7 @@ app.post('/signUp', (req, res)=>{
             return res.status(400).send({error : "The email has been registered before", data : null})
         }
     });
-        
+
 })
 
 app.post('/login', (req, res) => {
@@ -262,11 +323,11 @@ app.post('/login', (req, res) => {
 })
 
 app.post('/joinStudy', (req, res) => {
-    var instruction = `INSERT INTO StudyMember VALUES (${currentUser}, ${req.body.studygroupid})`; 
+    var instruction = `INSERT INTO StudyMember VALUES (${currentUser}, ${req.body.studygroupid})`;
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         if(err) {
-            res.status(400).send(err) 
+            res.status(400).send(err)
         } else {
             res.status(200).send(result);
         }
