@@ -1,19 +1,36 @@
 import { SearchBar, Button } from 'react-native-elements';
 
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { joinStudyEvent } from '../../service/api_service';
 import { View, CardItem, H3, Card, Text, Body, Left,Right, Icon, Content} from 'native-base';
 import FilterPage from './FilterPage';
-import { Modal, ScrollView, TouchableOpacity } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
 const MultiSearch = ({navigation}) => {
   const [search, setSearch] = useState("");
   const [list, setList] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState(null);
+
+  _retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('email');
+      if (value !== null) {
+        // We have data!!
+        setEmail(value);
+      } 
+    }catch (err) {
+        console.log(err);
+    }
+}
+  useEffect(()=>{
+    _retrieveData();
+  },[]);
 
   let child = null;
   if(list !== null ) {
-    child = list.map((each, index) => {
+    child = list.map((value, index) => {
       console.log(each);
+      let each = value._fields[0].properties
       console.log("list each");
       return (
         <TouchableOpacity key={index}>
@@ -33,7 +50,7 @@ const MultiSearch = ({navigation}) => {
                           type:'antdesign',
                   }}
                   title="Join!"
-                  onPress={() => joinStudyEvent(each.studygroupid)}
+                  onPress={() => joinStudyEvent(each, email)}
                 />
               </Right>
             </CardItem>
@@ -46,7 +63,7 @@ const MultiSearch = ({navigation}) => {
                 <Text> {each.time} </Text>
               </Left>
               <Right>
-                <Text>{"Host : " + each.id}</Text>
+                <Text>{"Host : " + each.host}</Text>
               </Right>
             </CardItem>
           </Card>

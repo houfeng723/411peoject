@@ -1,4 +1,4 @@
-const SERVER_URL = 'http://10.182.140.74:5005/';
+const SERVER_URL = 'http://10.180.131.146:5005/';
 export const fetch_port = async(state, port) => {
   let response = await fetch(SERVER_URL + port, {
     headers: {
@@ -7,6 +7,7 @@ export const fetch_port = async(state, port) => {
     body: JSON.stringify(state),
     method: 'POST'
   })
+  console.log(response);
   return response;
 }
 
@@ -80,7 +81,7 @@ export const signUpAccount = async(state) => {
     } else {
       alert("Address Has Been Used");
     }
-  })
+  }).catch( err =>  alert("Address Has Been Used"));
 }
 
 export const getStudyEvent = async(state) => {
@@ -95,6 +96,7 @@ export const getStudyEvent = async(state) => {
 }
 
 export const login = async(email, password) => {
+  console.log("99");
   let resp =  await fetch(SERVER_URL + 'login', {
   headers: {
     'content-type': 'application/json'
@@ -105,16 +107,16 @@ export const login = async(email, password) => {
   }),
   method: 'POST'
 });
+console.log(resp);
   return resp;
 }
 
-export const joinStudyEvent = async(studygroupid) => {
+export const joinStudyEvent = async(info, email) => {
   let response = await fetch(SERVER_URL + 'joinStudy', {
     headers: {
       'content-type': 'application/json'
     },
-    body: JSON.stringify({
-      studygroupid: studygroupid,
+    body: JSON.stringify({info:info, email:email
     }),
     method: 'POST'
   })

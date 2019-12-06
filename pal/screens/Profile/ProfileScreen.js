@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import { AsyncStorage, TouchableOpacity } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { Avatar, Title, Divider } from 'react-native-paper';
+import { AsyncStorage, TouchableOpacity, Modal, View, ScrollView } from 'react-native';
+import { Avatar, Title, Divider, TextInput } from 'react-native-paper';
 import { ButtonGroup, Button } from 'react-native-elements';
 import { fetch_port } from '../../service/api_service';
 import { Card, CardItem, Left, Right, Icon, H3, Text} from 'native-base';
@@ -14,6 +13,8 @@ export default function ProfileScreen({navigation}) {
   const [study, setStudy] = useState([]);
   const [ride, setRide] = useState([]);
   const [email, setEmail] = useState("");
+  const [showModal,setShowModal] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
   _retrieveData = async () => {
     try {
       const value = await AsyncStorage.getItem('email');
@@ -52,9 +53,6 @@ export default function ProfileScreen({navigation}) {
     _retrieveData();
 
   }, []);
-
-  
-  
 
   let rides = ride.map((obj, index) => {
     let each = obj._fields[0].properties;
@@ -125,9 +123,52 @@ export default function ProfileScreen({navigation}) {
         </TouchableOpacity>
     );
   });
+  
+  submitChange = async() => {
+    let value = await AsyncStorage.getItem('email');
+    if (value !== null) {
+      console.log("my email right now is : " + email);
+      fetch_port({email:value, password:newPassword}, "password").then(response => {
+        if(response.status === 200) {
+          alert("Success");
+        } else {
+          alert("Failed!");
+        }
+      }).catch(error=>{
+        console.log(error);
+      });
+    }else {
+      alert("Didn't know email");
+    }
+  };
+
+  let modal = (
+    <Modal
+    animationType="slide"
+    transparent={false}
+    visible={showModal}
+    onRequestClose={() => {
+        setShowModal(false);
+    }}>
+      <View style={{width:"100%", height:"100%", flex:1, flexDirection:'column', justifyContent:'space-evenly'}}>
+        <TextInput 
+                      label='New Password'
+                      value={newPassword}
+                      onChangeText={number => setNewPassword(number)}></TextInput>
+        
+        <Button title="submit"
+          onPress={()=>{
+                submitChange(); 
+                setShowModal(false);}}>
+
+        </Button>
+      </View>
+    </Modal>
+
+  )
+
   return (
     <ScrollView contentContainerStyle={{ width:"90%",alignContent:'center',flexDirection:'column', alignSelf:'center', padding:20}}>
-      
       <Avatar.Text size={100} label="HF"/>
 
       <Title >
@@ -145,12 +186,18 @@ export default function ProfileScreen({navigation}) {
               title="Reload" 
               type="outline"
               onPress={()=>_retrieveData()}/>
+      
+      <Button containerStyle={{width: "80%", padding:20 }}
+              title="Edit Password" 
+              type="outline"
+              onPress={()=>setShowModal(true)}/>
+      
       <Button containerStyle={{width: "80%", padding:20 }}
               title="Log out" 
               type="outline"
               onPress={()=>navigation.navigate("Auth")}/>
-
-
+      
+      {modal}
 
     </ScrollView>);
   }

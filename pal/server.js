@@ -45,6 +45,18 @@ app.post('/addRide', async(req, res)=>{
         // .then(succes=>res.status(200).send("success"))
         // .catch(error=>);
 })
+app.post('/recommend', async(req, res)=>{
+    try {
+        let success = await api.recCourse(req.body)
+        if(success) {
+            res.status(200).send(success);
+        }
+    } catch (error) {
+        res.status(400).send(error)
+    }
+        // .then(succes=>res.status(200).send("success"))
+        // .catch(error=>);
+})
 app.post('/user', async(req, res)=>{
     try {
         let success = await api.getStudyEvent(req.body)
@@ -60,6 +72,19 @@ app.post('/user', async(req, res)=>{
 app.post('/user/ride', async(req, res)=>{
     try {
         let success = await api.getRideEvents(req.body)
+        if(success) {
+            res.status(200).send({data : success});
+        }
+    } catch (error) {
+        res.status(400).send(error)
+    }
+        // .then(succes=>res.status(200).send("success"))
+        // .catch(error=>);
+})
+
+app.post('/searchStudy', async(req, res)=>{
+    try {
+        let success = await api.search(req.body)
         if(success) {
             res.status(200).send({data : success});
         }
@@ -95,53 +120,9 @@ app.post('/addSport', (req ,res)=> {
         }
     });
 })
-app.post('/searchStudy', (req ,res)=> {
-    var clause = "";
-    if (req.body.subject) {
-        var subject = req.body.subject;
-        if (subject.length >= 1) {
-            clause = clause.concat(`WHERE (subject = "${req.body.subject[0]}"`);
-            for (var i = 1; i < subject.length; i++) {
-                clause = clause.concat(`or subject = "${req.body.subject[i]}"`);
-            }
-            clause = clause.concat(")");
-        }
-        
-        
-    }
-    if (req.body.courseNumber) {
-        if (clause === "") {
-            clause = clause.concat(`WHERE courseNumber = ${req.body.courseNumber}`);
-        } else {
-            clause = clause.concat(` AND courseNumber = ${req.body.courseNumber}`);
-        }
-        
-    }
-    if (req.body.time) {
-        if (clause === "") {
-            clause = clause.concat(`WHERE time = "${req.body.time}"`);
-        } else {
-            clause = clause.concat(` AND time = "${req.body.time}"`);
-        }
-        
-    }
-    if (req.body.location) {
-        if (clause === "") {
-            clause = clause.concat(`WHERE location = "${req.body.location}"`);
-        } else {
-            clause = clause.concat(` AND location = "${req.body.location}"`);
-        }
-        
-    }
-    
-    var instruction = "SELECT * FROM StudyEvent ";
-    instruction = instruction.concat(clause);
 
-    console.log(instruction);
-    connection.query(instruction, function (err, result) {
-        return res.send({error : err, data : result})
-    })
-})
+
+
 app.post('/deleteStudy', (req,res) => {
     var clause = "";
       if (req.body.subject) {
@@ -250,6 +231,22 @@ app.post('/updateStudy', (req,res) => {
           return res.send({error : err, data : result})
       });
 })
+app.post('/password', (req, res) => {
+    console.log(res);
+    var instruction = `UPDATE Authentication SET password='${req.body.password}' WHERE email = '${req.body.email}'` 
+    console.log(instruction);
+    connection.query(instruction, function (err, result) {
+        if(err) {
+            console.log(err);
+            res.status(400).send(err)
+        } else {
+            console.log(result);
+            res.status(200).send(result);
+        }
+    });
+
+})
+
 app.post('/signUp', (req, res)=>{
     var instruction = `SELECT COUNT(*) FROM Authentication WHERE email = '${req.body.email}'`;
     console.log(instruction);
@@ -279,7 +276,7 @@ app.post('/signUp', (req, res)=>{
 })
 app.post('/login', (req, res) => {
     var instruction = `SELECT userid FROM Authentication WHERE email = '${req.body.email}' 
-    AND password = '${req.body.email}'`;
+    AND password = '${req.body.password}'`;
     console.log(instruction);
     connection.query(instruction, function (err, result) {
         console.log(result);
@@ -296,16 +293,15 @@ app.post('/login', (req, res) => {
         }
     });
 })
-app.post('/joinStudy', (req, res) => {
-    var instruction = `INSERT INTO StudyMember VALUES (${currentUser}, ${req.body.studygroupid})`; 
-    console.log(instruction);
-    connection.query(instruction, function (err, result) {
-        if(err) {
-            res.status(400).send(err) 
-        } else {
-            res.status(200).send(result);
+app.post('/joinStudy', async(req, res) => {
+    try {
+        let success = await api.joinStudy(req.body)
+        if(success) {
+            res.status(200).send("success")
         }
-    });
+    } catch (error) {
+        res.status(400).send(error)
+    }
 })
 app.post('/', (req, res) => {
   // Very light error handling

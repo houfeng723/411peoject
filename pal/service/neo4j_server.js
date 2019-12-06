@@ -12,10 +12,30 @@ const personName = 'Alice';
 //         email: email
 //     }
 //   );
+async function recCourse(info) {
+    let session = driver.session();
+    let query = "MATCH (a: Student {email: $email}) -[:join]-(s1:Study)-[:join]-(b: Student)-[:join]-(s2:Study)"
+    +" WITH collect(s1.courseNumber) as listA, s2, collect(s2) as listB"
+    +" WHERE NOT s2.courseNumber  in listA"
+    +" RETURN s2.courseNumber, count(s2) as num"
+    +" ORDER BY num DESC" ;
+    console.log(query);
+    var email = info.email;
+    try {
+        const result = await session.run(query, info);
+        session.close();
+        console.log(result);
+        return result;
+    }
+    catch (error) {
+        session.close();
+        throw error;
+    }
+}
+
 async function addPerson(info) {
     // setup query
     let session = driver.session();
-    console.log("18");
     let query = 'CREATE (a:Student {email: $email, name: $name}) RETURN a';
     console.log(query);
     var email = info.email;
@@ -40,13 +60,17 @@ async function getStudyEvent(info) {
                 + " WHERE a.email = $email"
                 + " RETURN b ";
 
+
+        console.log(info);
     try {
         const result = await session.run(query, info);
         session.close();
+        console.log(result);
         return result;
     }
     catch (error) {
         session.close();
+        console.log(error);
         throw error;
     }
 
@@ -99,7 +123,6 @@ async function addStudy(info) {
 async function searchStudyEvent(info) {
     let session = driver.session();
     // setup query
-    
     var clause = "";
     if (info.subject) {
         var subject = info.subject;
@@ -110,8 +133,6 @@ async function searchStudyEvent(info) {
             }
             clause = clause.concat(")");
         }
-        
-        
     }
     if (info.courseNumber) {
         if (clause === "") {
@@ -180,22 +201,25 @@ async function addRide(info) {
 
 async function joinStudy(info) {
     let session = driver.session();
+    let email = info.email;
+    let data = info.info;
+    data["email"]= email;
     let query = 
         "MATCH (a:Student),(b:Study) "
-       + "WHERE a.email = $email AND b.id = $study "
-        +"CREATE (a)-[r:Join]->(b) "
+       + "WHERE a.email = $email AND b.subject = $subject AND b.host = $host AND b.courseNumber = $courseNumber "
+       + "AND b.location = $location and b.date=$date "
+        +"CREATE (a)-[r:join]->(b) "
         +"RETURN type(r) ";
-    
-    console.log(info.email);
-    var email = info.email;
+    console.log(query);
     try {
-        const result = await session.run(query, info);
+        const result = await session.run(query, data);
         session.close();
         console.log(result);
         return result;
     }
     catch (error) {
         session.close();
+        console.log(error);
         throw error;
     }
 }
@@ -205,5 +229,7 @@ exports.addRideNeo = addRide;
 exports.addStudy = addStudy;
 exports.searchStudyEvent = searchStudyEvent;
 exports.getStudyEvent=getStudyEvent;
-
+exports.search = searchStudyEvent;
 exports.getRideEvents=getRideEvents;
+exports.joinStudy = joinStudy;
+exports.recCourse = recCourse;

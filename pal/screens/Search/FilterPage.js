@@ -6,6 +6,7 @@ import { Divider, Text } from 'react-native-paper';
 import { DatePicker, H3} from 'native-base';
 import { Button, ButtonGroup, Icon } from 'react-native-elements';
 import { TextInput } from 'react-native-paper';
+import { AsyncStorage } from 'react-native';
 
 import { getStudyEvent } from '../../service/api_service'
 const features = ["CS", "MATH", 
@@ -17,10 +18,22 @@ export default function FilterPage(props){
     const [courseNumber, setCourseNumber] = useState(null);
     const [selectedFeature, setSelectedFeature] = useState({});
     const [rerender, setRerender] = useState([]);
+    const [email, setEmail] = useState(null);
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
     const [location, setLocation] = useState(null);
     const [price, setPrice] = useState(null);
+    _retrieveData = async () => {
+        try {
+          const value = await AsyncStorage.getItem('email');
+          if (value !== null) {
+            // We have data!!
+            setEmail(value);
+          } 
+        }catch (err) {
+            console.log(err);
+        }
+    }
     const onSelect = (each) => {
         var newState = selectedFeature;
         if(each in newState) {
@@ -35,6 +48,7 @@ export default function FilterPage(props){
 
     useEffect(()=> {
         let dict = {};
+        _retrieveData();
         feature.forEach(each=>{
             dict[each] = false;
         })
@@ -45,6 +59,7 @@ export default function FilterPage(props){
     let filtered = feature.filter((each)=>{
         return selectedFeature[each];
     });
+
     console.log(feature)
     var child = feature.map((key, index) => {
         return (
@@ -82,7 +97,10 @@ export default function FilterPage(props){
 
         console.log(dict);
         getStudyEvent(dict).then(response => response.json())
-        .then(data => {props.setList(data.data);props.closeModal()});
+        .then(data => {
+            console.log(data);
+            props.setList(data.data.records);
+            props.closeModal()});
     }
 
     return (
